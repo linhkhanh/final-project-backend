@@ -24,22 +24,34 @@ module.exports = {
       },
       account_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'accounts',
+          key: 'id'
+        },
       },
       category_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'categories',
+          key: 'id'
+      },
       },
       user_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users',
+          key: 'id'
+      },
       }
     });
 
   },
 
   down: async (queryInterface, Sequelize) => {
-     await queryInterface.dropTable('transactions');
-   
+    await queryInterface.dropTable('transactions');
+
   }
 };
