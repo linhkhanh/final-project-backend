@@ -1,4 +1,4 @@
-function applyExtraSetup(db) {
+function applyExtraSetup (db) {
     const { users, transactions, accounts, categories } = db;
 
     console.log(users);
@@ -6,7 +6,7 @@ function applyExtraSetup(db) {
     users.hasMany(accounts);
     accounts.belongsTo(users);
 
-	users.hasMany(transactions);
+    users.hasMany(transactions);
     transactions.belongsTo(users);
     
     categories.hasMany(transactions);
