@@ -18,11 +18,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
-      paid_at: {
+      paidAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      account_id: {
+      accountId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
@@ -30,21 +30,29 @@ module.exports = {
           key: 'id'
         },
       },
-      category_id: {
+      categoryId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'categories',
           key: 'id'
+        },
       },
-      },
-      user_id: {
+      userId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'users',
           key: 'id'
+        },
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
 

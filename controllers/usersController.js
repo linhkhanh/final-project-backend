@@ -1,8 +1,9 @@
-const { models } = require('../models');
+const  db  = require('../models');
 const { getIdParam } = require('./helper');
+const httpResponseFormatter = require('../formatters/httpResponse');
 
 async function getAll(req, res) {
-	const users = await models.users.findAll();
+    const users = await db.users.findAll();
     httpResponseFormatter.formatOkResponse(res, users);
 };
 
@@ -56,5 +57,5 @@ module.exports = {
 	getById,
 	create,
 	update,
-	remove,
+	remove
 };

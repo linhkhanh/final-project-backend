@@ -1,6 +1,6 @@
 'use strict';
 
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
@@ -14,18 +14,30 @@ if (config.use_env_variable) {
 }
 
 const modelDefiners = [
-	require('./tables/users'),
-	require('./tables/transactions'),
-  require('./tables/accounts'),
-  require('./tables/categories')
+  {
+    name: 'users',
+    model: require('./tables/users'),
+  },
+  {
+    name: 'transactions',
+    model: require('./tables/transactions')
+  },
+  {
+    name: 'accounts',
+    model: require('./tables/accounts')
+  },
+  {
+    name: 'categories',
+    model: require('./tables/categories')
+  }
 ];
 
 // We define all models according to their files.
 for (const modelDefiner of modelDefiners) {
-	 modelDefiner(sequelize);
+  db[modelDefiner.name] = modelDefiner.model(sequelize);
 }
 
-applyExtraSetup(sequelize);
+applyExtraSetup(db);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

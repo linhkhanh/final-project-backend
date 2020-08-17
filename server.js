@@ -28,7 +28,7 @@ app.use(session({ secret: 'randomsecret' })); // USE SESSION TO LOGIN/LOGOUT
 app.use(cors({ origin: process.env.FRONT_END_URL || 'http://localhost:3000', credentials: true }));
 app.use(express.urlencoded({ extended: false }));
 
-// require('./router')(app);
+require('./router')(app);
 
 async function init() {
 	await assertDatabaseConnectionOk();
