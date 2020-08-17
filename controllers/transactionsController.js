@@ -3,17 +3,17 @@ const { getIdParam } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
 async function getAll(req, res) {
-    const users = await models.users.findAll();
-    httpResponseFormatter.formatOkResponse(res, users);
+    const transactions = await models.transactions.findAll();
+    httpResponseFormatter.formatOkResponse(res, transactions);
 };
 
 async function getById(req, res) {
 	const id = getIdParam(req);
-	const user = await models.users.findByPk(id);
-	if (user) {
-        httpResponseFormatter.formatOkResponse(res, user);
+	const transaction = await models.transactions.findByPk(id);
+	if (transaction) {
+        httpResponseFormatter.formatOkResponse(res, transaction);
 	} else {
-        httpResponseFormatter.formatOkResponse(res, {message: "This user doen't exist."});
+        httpResponseFormatter.formatOkResponse(res, {message: "This one doen't exist."});
 	}
 };
 
@@ -21,9 +21,8 @@ async function create(req, res) {
 	if (req.body.id) {
         httpResponseFormatter.formatOkResponse(res, {message: "ID should not be provided, since it is determined automatically by the database."});
 	} else {
-		console.log(req.body);
-		await models.users.create(req.body);
-		httpResponseFormatter.formatOkResponse(res, {message: "A new user is created."});
+		await models.transactions.create(req.body);
+		httpResponseFormatter.formatOkResponse(res, {message: "A new transaction is created."});
 	}
 };
 
@@ -32,7 +31,7 @@ async function update(req, res) {
 
 	// We only accept an UPDATE request if the `:id` param matches the body `id`
 	if (req.body.id === id) {
-		await models.users.update(req.body, {
+		await models.transactions.update(req.body, {
 			where: {
 				id: id
 			}
@@ -45,7 +44,7 @@ async function update(req, res) {
 
 async function remove(req, res) {
 	const id = getIdParam(req);
-	await models.users.destroy({
+	await models.transactions.destroy({
 		where: {
 			id: id
 		}

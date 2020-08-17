@@ -3,17 +3,17 @@ const { getIdParam } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
 async function getAll(req, res) {
-    const users = await models.users.findAll();
-    httpResponseFormatter.formatOkResponse(res, users);
+    const categories = await models.categories.findAll();
+    httpResponseFormatter.formatOkResponse(res, categories);
 };
 
 async function getById(req, res) {
 	const id = getIdParam(req);
-	const user = await models.users.findByPk(id);
-	if (user) {
+	const categorie = await models.categories.findByPk(id);
+	if (categorie) {
         httpResponseFormatter.formatOkResponse(res, user);
 	} else {
-        httpResponseFormatter.formatOkResponse(res, {message: "This user doen't exist."});
+        httpResponseFormatter.formatOkResponse(res, {message: "This category doen't exist."});
 	}
 };
 
@@ -21,9 +21,8 @@ async function create(req, res) {
 	if (req.body.id) {
         httpResponseFormatter.formatOkResponse(res, {message: "ID should not be provided, since it is determined automatically by the database."});
 	} else {
-		console.log(req.body);
-		await models.users.create(req.body);
-		httpResponseFormatter.formatOkResponse(res, {message: "A new user is created."});
+		await models.categories.create(req.body);
+		httpResponseFormatter.formatOkResponse(res, {message: "A new category is created."});
 	}
 };
 
@@ -32,7 +31,7 @@ async function update(req, res) {
 
 	// We only accept an UPDATE request if the `:id` param matches the body `id`
 	if (req.body.id === id) {
-		await models.users.update(req.body, {
+		await models.categories.update(req.body, {
 			where: {
 				id: id
 			}
@@ -45,7 +44,7 @@ async function update(req, res) {
 
 async function remove(req, res) {
 	const id = getIdParam(req);
-	await models.users.destroy({
+	await models.categories.destroy({
 		where: {
 			id: id
 		}
