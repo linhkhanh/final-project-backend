@@ -30,9 +30,10 @@ async function create (req, res) {
 
 async function update (req, res) {
     const id = getIdParam(req);
+    console.log(id);
 
     // We only accept an UPDATE request if the `:id` param matches the body `id`
-    if (req.body.id === id) {
+    if (id) {
         await models.users.update(req.body, {
             where: {
                 id: id
