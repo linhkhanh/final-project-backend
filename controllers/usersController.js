@@ -1,9 +1,9 @@
-const  db  = require('../models');
+const  models  = require('../models');
 const { getIdParam } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
 async function getAll(req, res) {
-    const users = await db.users.findAll();
+    const users = await models.users.findAll();
     httpResponseFormatter.formatOkResponse(res, users);
 };
 
