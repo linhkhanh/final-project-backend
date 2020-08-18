@@ -25,5 +25,13 @@ module.exports = (sequelize) => {
         updatedAt: {
             type: DataTypes.DATE
         }
-    });
+	},
+	{
+		indexes: [
+			{
+				unique: true,
+				fields: ['userId', 'name']
+			}
+		]
+	});
 };
