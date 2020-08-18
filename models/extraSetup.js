@@ -1,7 +1,5 @@
 function applyExtraSetup(db) {
     const { users, transactions, accounts, categories } = db;
-
-    console.log(users);
   
     users.hasMany(accounts);
     accounts.belongsTo(users);
