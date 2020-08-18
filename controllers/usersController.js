@@ -1,62 +1,64 @@
 const  models  = require('../models');
-const { getIdParam } = require('./helper');
+const { getIdParam, hashPassword } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
-async function getAll(req, res) {
+async function getAll (req, res) {
     const users = await models.users.findAll();
     httpResponseFormatter.formatOkResponse(res, users);
-};
+}
 
-async function getById(req, res) {
-	const id = getIdParam(req);
-	const user = await models.users.findByPk(id);
-	if (user) {
+async function getById (req, res) {
+    const id = getIdParam(req);
+    const user = await models.users.findByPk(id);
+    if (user) {
         httpResponseFormatter.formatOkResponse(res, user);
-	} else {
-        httpResponseFormatter.formatOkResponse(res, {message: "This user doen't exist."});
-	}
-};
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'This user doesn\'t exist.' });
+    }
+}
 
-async function create(req, res) {
-	if (req.body.id) {
-        httpResponseFormatter.formatOkResponse(res, {message: "ID should not be provided, since it is determined automatically by the database."});
-	} else {
-		console.log(req.body);
-		await models.users.create(req.body);
-		httpResponseFormatter.formatOkResponse(res, {message: "A new user is created."});
-	}
-};
+async function create (req, res) {
+    if (req.body.id) {
+        httpResponseFormatter.formatOkResponse(res, { message: 'ID should not be provided, since it is determined automatically by the database.' });
+    } else {
+        console.log(req.body);
+        req.body.password = hashPassword(req.body.password);
+        await models.users.create(req.body);
+        httpResponseFormatter.formatOkResponse(res, { message: 'A new user is created.' });
+    }
+}
 
-async function update(req, res) {
-	const id = getIdParam(req);
+async function update (req, res) {
+    const id = getIdParam(req);
+    console.log(id);
 
-	// We only accept an UPDATE request if the `:id` param matches the body `id`
-	if (req.body.id === id) {
-		await models.users.update(req.body, {
-			where: {
-				id: id
-			}
-		});
-		httpResponseFormatter.formatOkResponse(res, {message: "Update successfully."});
-	} else {
-        httpResponseFormatter.formatOkResponse(res, {message: `param ID (${id}) does not match body ID (${req.body.id}).`});
-	}
-};
+    // We only accept an UPDATE request if the `:id` param matches the body `id`
+    if (id) {
+        await models.users.update(req.body, {
+            where: {
+                id: id
+            }
+        });
+        httpResponseFormatter.formatOkResponse(res, { message: 'Update successfully.' });
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: `param ID (${id}) does not match body ID (${req.body.id}).` });
+    }
+}
 
-async function remove(req, res) {
-	const id = getIdParam(req);
-	await models.users.destroy({
-		where: {
-			id: id
-		}
-	});
-	httpResponseFormatter.formatOkResponse(res, {message: "Delete successfully."});
-};
+async function remove (req, res) {
+    const id = getIdParam(req);
+    await models.users.destroy({
+        where: {
+            id: id
+        }
+    });
+    httpResponseFormatter.formatOkResponse(res, { message: 'Delete successfully.' });
+}
 
 module.exports = {
-	getAll,
-	getById,
-	create,
-	update,
-	remove
+    getAll,
+    getById,
+    create,
+    update,
+    remove
 };
