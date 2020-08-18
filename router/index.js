@@ -3,10 +3,8 @@ const controllers = {
 };
 
 module.exports = app => {
-    
-    app.get('/users', controllers.users.getAll);
+    app.get('/users/all', controllers.users.getAll);
     app.get('/users/:id', controllers.users.getById);
-    app.post('/users', controllers.users.create);
+    app.post('/users/new', controllers.users.create);
     app.put('/users/:id', controllers.users.update);
-
 };
