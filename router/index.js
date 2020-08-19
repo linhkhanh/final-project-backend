@@ -23,6 +23,9 @@ module.exports = app => {
     // login
     app.post('/users/login', controllers.session.loginSubmit);
 
+    // google.login
+    app.post('/users/googlelogin', controllers.session.logInWithGoogle);
+
     //update user by id
     app.put('/users/:id', controllers.users.update);
 };

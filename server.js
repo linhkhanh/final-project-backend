@@ -9,6 +9,10 @@ const cors = require('cors');
 const db = require('./models');
 const PORT = process.env.PORT || 4000;
 
+require('dotenv').config({
+    path: './config/config.env'
+});
+
 /// Connect to database by using sequelize
 async function assertDatabaseConnectionOk () {
     console.log('Checking database connection...');

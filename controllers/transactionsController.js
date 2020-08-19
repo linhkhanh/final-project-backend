@@ -13,7 +13,7 @@ async function getById (req, res) {
     if (transaction) {
         httpResponseFormatter.formatOkResponse(res, transaction);
     } else {
-        httpResponseFormatter.formatOkResponse(res, { message: 'This one doen\'t exist.' });
+        httpResponseFormatter.formatOkResponse(res, { message: 'This one doesn\'t exist.' });
     }
 }
 
