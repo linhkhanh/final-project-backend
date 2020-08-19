@@ -1,0 +1,72 @@
+const httpResponseFormatter = require('../formatters/httpResponse');
+const bcrypt = require('bcrypt');
+const axios = require('axios');
+const models = require('../models');
+
+module.exports = {
+    async loginSubmit(req, res) {
+        try {
+            const user = await models.users.findOne({ where: { email: req.body.email } });
+
+            if (!user) httpResponseFormatter.formatOkResponse(res, {
+                err: "This user doesn't exist"
+            });
+            if (bcrypt.compareSync(req.body.password, user.password)) {
+                req.session.userId = user.id;
+                httpResponseFormatter.formatOkResponse(res, user);
+            } else {
+                httpResponseFormatter.formatOkResponse(res, {
+                    err: "password is wrong"
+                });
+            }
+        } catch (err) {
+            console.log(err);
+            httpResponseFormatter.formatOkResponse(res, {
+                err: err.message
+            });
+        }
+    },
+    logOut: (req, res) => {
+        req.session.destroy((err) => {
+            if (err) {
+                return console.log(err);
+            }
+            httpResponseFormatter.formatOkResponse(res, {
+                message: "log out"
+            });
+        })
+    },
+    async checkAuthentication(req, res) {
+        if (req.session.userId) {
+            const user = await models.users.findByPk(req.session.userId);
+            httpResponseFormatter.formatOkResponse(res, user)
+        } else {
+            httpResponseFormatter.formatOkResponse(res, {
+                message: "You need to log in to able to access your database."
+            });
+        }
+    },
+    async getDataFacebook(req, res) {
+        const { data } = await axios({
+            url: 'https://graph.facebook.com/me',
+            method: 'get',
+            params: {
+                fields: ['email', 'first_name', 'last_name'].join(','),
+                access_token: req.body.accessToken,
+            },
+        });
+        httpResponseFormatter.formatOkResponse(res, data);
+    },
+    async logInWithFacebookSubmit(req, res) {
+        try {
+            const user = await usersRepository.getOneByEmail(req.body.email);
+            req.session.userId = user._id;
+            httpResponseFormatter.formatOkResponse(res, user);
+        } catch (err) {
+            console.log(err);
+            httpResponseFormatter.formatOkResponse(res, {
+                err: err.message
+            });
+        }
+    }
+}
