@@ -26,6 +26,8 @@ module.exports = app => {
     // google.login
     app.post('/users/googlelogin', controllers.session.logInWithGoogle);
 
+    app.post('/users/log_in_fb_google', controllers.session.logInWithFbOrGoogle);
+
     //update user by id
     app.put('/users/:id', controllers.users.update);
 };
