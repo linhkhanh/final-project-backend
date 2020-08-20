@@ -61,15 +61,15 @@ module.exports = {
         });
         httpResponseFormatter.formatOkResponse(res, data);
     },
-    async logInWithFacebookSubmit (req, res) {
+    async logInWithFbOrGoogle (req, res) {
         try {
-            const user = await usersRepository.getOneByEmail(req.body.email);
-            req.session.userId = user._id;
+            const user = await models.users.findOne({ where: { email: req.body.email } });
+            req.session.userId = user.id;
             httpResponseFormatter.formatOkResponse(res, user);
         } catch (err) {
             console.log(err);
             httpResponseFormatter.formatOkResponse(res, {
-                err: err.message
+                err: 'This user doesn\'t exist'
             });
         }
     },
