@@ -43,9 +43,8 @@ async function create (req, res) {
 
 async function update (req, res) {
     const id = getIdParam(req);
-
-    // We only accept an UPDATE request if the `:id` param matches the body `id`
-    if (req.body.id === id) {
+    if (id) {
+		req.body.password = hashPassword(req.body.password);
         await models.users.update(req.body, {
             where: {
                 id: id
@@ -53,7 +52,7 @@ async function update (req, res) {
         });
         httpResponseFormatter.formatOkResponse(res, { message: 'Update successfully.' });
     } else {
-        httpResponseFormatter.formatOkResponse(res, { message: `param ID (${id}) does not match body ID (${req.body.id}).` });
+        httpResponseFormatter.formatOkResponse(res, { message: 'This user doesn\'t exist' });
     }
 }
 
@@ -67,11 +66,47 @@ async function remove (req, res) {
     httpResponseFormatter.formatOkResponse(res, { message: 'Delete successfully.' });
 }
 
+async function getAllAccounts (req, res) {
+	const id = getIdParam(req);
+	const accounts = await models.accounts.findAll({
+		where: {
+			userId: id
+		}
+	});
+	console.log(accounts);
+	if(accounts) {
+		httpResponseFormatter.formatOkResponse(res, accounts);
+	} else {
+		httpResponseFormatter.formatOkResponse(res, {
+			message: "You don't have any account"
+		});
+	}
+}
+
+async function getAllTransactions (req, res) {
+	const id = getIdParam(req);
+	const transactions = await models.transactions.findAll({
+		where: {
+			userId: id
+		}
+	});
+	console.log(transactions);
+	if(transactions) {
+		httpResponseFormatter.formatOkResponse(res, transactions);
+	} else {
+		httpResponseFormatter.formatOkResponse(res, {
+			message: "You don't have any transaction"
+		});
+	}
+}
+
 module.exports = {
     getAll,
     getById,
     getByEmail,
     create,
     update,
-    remove
+	remove,
+	getAllAccounts,
+	getAllTransactions
 };
