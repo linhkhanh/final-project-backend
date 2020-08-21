@@ -21,6 +21,7 @@ async function create (req, res) {
     if (req.body.id) {
         httpResponseFormatter.formatOkResponse(res, { message: 'ID should not be provided, since it is determined automatically by the database.' });
     } else {
+        req.body.userId = req.session.userId;
         await models.accounts.create(req.body);
         httpResponseFormatter.formatOkResponse(res, { message: 'A new account is created.' });
     }
@@ -28,9 +29,8 @@ async function create (req, res) {
 
 async function update (req, res) {
     const id = getIdParam(req);
-
-    // We only accept an UPDATE request if the `:id` param matches the body `id`
-    if (req.body.id === id) {
+    
+    if (id) {
         await models.accounts.update(req.body, {
             where: {
                 id: id
@@ -38,7 +38,7 @@ async function update (req, res) {
         });
         httpResponseFormatter.formatOkResponse(res, { message: 'Update successfully.' });
     } else {
-        httpResponseFormatter.formatOkResponse(res, { message: `param ID (${id}) does not match body ID (${req.body.id}).` });
+        httpResponseFormatter.formatOkResponse(res, { message: 'This account doen\'t exist.' });
     }
 }
 
@@ -52,10 +52,26 @@ async function remove (req, res) {
     httpResponseFormatter.formatOkResponse(res, { message: 'Delete successfully.' });
 }
 
+async function getAllTransactions (req, res) {
+    const id = getIdParam(req);
+    const transactions = await models.transactions.findAll({
+        where: {
+            accountId: id
+        }
+    });
+    if(transactions) {
+        httpResponseFormatter.formatOkResponse(res, transactions);
+    } else {
+        httpResponseFormatter.formatOkResponse(res, {
+            message: "You don't have any transaction."
+        });
+    }
+}
 module.exports = {
     getAll,
     getById,
     create,
     update,
-    remove
+    remove,
+    getAllTransactions
 };
