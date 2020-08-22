@@ -100,23 +100,6 @@ async function getAllAccounts(req, res) {
 	}
 }
 
-async function getAllTransactions(req, res) {
-	if (req.session.userId) {
-		try {
-			const id = getIdParam(req);
-			const transactions = getAllTransactionsByUserId(id);
-			console.log(transactions);
-			httpResponseFormatter.formatOkResponse(res, transactions);
-		} catch (err) {
-			httpResponseFormatter.formatOkResponse(res, {
-				message: err.message
-			});
-		}
-	} else {
-		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
-	}
-
-}
 
 
 module.exports = {
@@ -126,6 +109,5 @@ module.exports = {
 	create,
 	update,
 	remove,
-	getAllAccounts,
-	getAllTransactions
+	getAllAccounts
 };

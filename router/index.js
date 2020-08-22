@@ -33,19 +33,20 @@ module.exports = app => {
     app.get('/transactions/:id', controllers.transactions.getById);
 
     // get all accounts by user id
-    app.get('/users/:id/accounts', controllers.users.getAllAccounts);
+    app.get('/users/:id/accounts', controllers.accounts.getAllAccounts);
 
     // get all transactions by user id
-     app.get('/users/:id/transactions', controllers.users.getAllTransactions);
-
-    // calculate credit, debit and balance of all accounts
-    // app.get('/users/:id/accounts/statistic', controllers.users.calculateBalanceAllAccounts);
+     app.get('/users/:id/transactions', controllers.transactions.getAllTransactionsByUserId);
 
     // get all transactions by account id
-    app.get('/accounts/:id/transactions', controllers.accounts.getAllTransactions);
+    app.get('/accounts/:id/transactions', controllers.transactions.getAllTransactionsByAccountId);
+
+    // calculate credit, debit and balance of all accounts
+    app.get('/users/:id/accounts/statistic', controllers.transactions.calculateBalance);
 
     // get All transactions by categories id
     app.get('/transactions/categories/:categoriesID', controllers.transactions.getAllTransactionsByCatID);
+
 
     // create new user
     app.post('/users/new', controllers.users.create);
