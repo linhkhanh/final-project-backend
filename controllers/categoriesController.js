@@ -9,12 +9,17 @@ async function getAll(req, res) {
 
 async function getById(req, res) {
     const id = getIdParam(req);
-    const categories = await models.categories.findByPk(id);
-    if (categories) {
-        httpResponseFormatter.formatOkResponse(res, user);
-    } else {
-        httpResponseFormatter.formatOkResponse(res, { message: 'This category doesn\'t exist.' });
+    try {
+        const categories = await models.categories.findByPk(id);
+        if (categories) {
+            httpResponseFormatter.formatOkResponse(res, categories);
+        } else {
+            httpResponseFormatter.formatOkResponse(res, { message: 'This category doesn\'t exist.' });
+        }
+    } catch (err) {
+        httpResponseFormatter.formatOkResponse(res, { message: err.message });
     }
+
 }
 
 async function create(req, res) {
@@ -63,6 +68,7 @@ async function getByIncome(req, res) {
                 type: "income"
             }
         });
+        httpResponseFormatter.formatOkResponse(res, categories);
     } catch (err) {
         httpResponseFormatter.formatOkResponse(res, { message: err.message });
     }
@@ -75,6 +81,7 @@ async function getByExpense(req, res) {
                 type: "expense"
             }
         });
+        httpResponseFormatter.formatOkResponse(res, categories);
     } catch (err) {
         httpResponseFormatter.formatOkResponse(res, { message: err.message });
     }
