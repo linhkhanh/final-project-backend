@@ -98,8 +98,53 @@ async function getAllTransactionsByCatID(req, res) {
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in' });
     }
+}
 
+async function getAllTransactionsByUserId(req, res) {
+	if (req.session.userId) {
+		try {
+			const id = getIdParam(req);
+			const transactions = getAllTransactionsByUserId(id);
+			console.log(transactions);
+			httpResponseFormatter.formatOkResponse(res, transactions);
+		} catch (err) {
+			httpResponseFormatter.formatOkResponse(res, {
+				message: err.message
+			});
+		}
+	} else {
+		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+	}
 
+}
+
+async function getAllTransactionsByAccountId(req, res) {
+    if (req.session.userId) {
+
+        try {
+            const id = getIdParam(req);
+            const transactions = await models.transactions.findAll({
+                where: {
+                    accountId: id
+                }
+            });
+            httpResponseFormatter.formatOkResponse(res, transactions);
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, {
+                message: err.message
+            });
+        }
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
+
+async function calculateBalance (req, res) {
+    if (req.session.userId) {
+
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
 }
 module.exports = {
     getAll,
@@ -107,5 +152,8 @@ module.exports = {
     create,
     update,
     remove,
-    getAllTransactionsByCatID
+    getAllTransactionsByCatID,
+    getAllTransactionsByUserId,
+    getAllTransactionsByAccountId,
+    calculateBalance
 };

@@ -78,32 +78,32 @@ async function remove(req, res) {
 
 }
 
-async function getAllTransactions(req, res) {
-    if (req.session.userId) {
+async function getAllAccounts(req, res) {
+	if (req.session.userId) {
+		try {
+			const id = getIdParam(req);
+			const accounts = await models.accounts.findAll({
+				where: {
+					userId: id
+				}
+			});
+			console.log(accounts);
+			httpResponseFormatter.formatOkResponse(res, accounts);
+		} catch (err) {
+			httpResponseFormatter.formatOkResponse(res, { message: err.message });
+		}
 
-        try {
-            const id = getIdParam(req);
-            const transactions = await models.transactions.findAll({
-                where: {
-                    accountId: id
-                }
-            });
-            httpResponseFormatter.formatOkResponse(res, transactions);
-        } catch (err) {
-            httpResponseFormatter.formatOkResponse(res, {
-                message: err.message
-            });
-        }
-    } else {
-        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
-    }
-
+	} else {
+		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+	}
 }
+
+
 module.exports = {
     getAll,
     getById,
     create,
     update,
     remove,
-    getAllTransactions
+    getAllAccounts
 };
