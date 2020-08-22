@@ -81,7 +81,6 @@ async function remove(req, res) {
 async function getAllTransactionsByCatID(req, res) {
     if (req.session.userId) {
         try {
-            httpResponseFormatter.formatOkResponse(res, transactions);
             const id = getIdParam(req);
 
             const transactions = await models.transactions.findAll({
@@ -90,6 +89,7 @@ async function getAllTransactionsByCatID(req, res) {
                 }
             })
             console.log(transactions);
+            httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
                 message: err.message
