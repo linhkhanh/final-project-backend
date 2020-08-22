@@ -1,7 +1,9 @@
 const controllers = {
     users: require('../controllers/usersController'),
     session: require('../controllers/session'),
-    accounts: require('../controllers/accountsController')
+    accounts: require('../controllers/accountsController'),
+    transactions: require('../controllers/transactionsController'),
+    categories: require('../controllers/categoriesController')
 };
 
 module.exports = app => {
@@ -15,17 +17,35 @@ module.exports = app => {
     // logout
     app.get('/users/logout', controllers.session.logOut);
 
+    // get categories by income
+    app.get('/categories/income', controllers.categories.getByIncome);
+
+    // get categories by expense
+    app.get('/categories/expense', controllers.categories.getByExpense);
+
+    // get categories by id
+    app.get('/categories/:id', controllers.categories.getById);
+
     //get user by Id
     app.get('/users/:id', controllers.users.getById);
+
+    // get transaction by id
+    app.get('/transactions/:id', controllers.transactions.getById);
 
     // get all accounts by user id
     app.get('/users/:id/accounts', controllers.users.getAllAccounts);
 
     // get all transactions by user id
-    app.get('/users/:id/transactions', controllers.users.getAllTransactions);
+     app.get('/users/:id/transactions', controllers.users.getAllTransactions);
+
+    // calculate credit, debit and balance of all accounts
+    // app.get('/users/:id/accounts/statistic', controllers.users.calculateBalanceAllAccounts);
 
     // get all transactions by account id
     app.get('/accounts/:id/transactions', controllers.accounts.getAllTransactions);
+
+    // get All transactions by categories id
+    app.get('/transactions/categories/:categoriesID', controllers.transactions.getAllTransactionsByCatID);
 
     // create new user
     app.post('/users/new', controllers.users.create);
@@ -45,12 +65,30 @@ module.exports = app => {
     // CREATE NEW ACCOUNT
     app.post('/accounts/new', controllers.accounts.create);
 
+    // create NEW TRANSACTION
+    app.post('/transactions/new', controllers.transactions.create);
+
+    // CREATE NEW CATEGORIES
+    app.post('/categories/new', controllers.categories.create);
+
     //update user by id
     app.put('/users/:id', controllers.users.update);
 
     // update Name of ACCOUNT by id
     app.put('/accounts/:id', controllers.accounts.update);
 
+    // update Name and type of Category
+    app.put('/categories/:id', controllers.categories.update);
+
+    // edit transaction 
+    app.put('/transactions/:id', controllers.transactions.update);
+
     // delete account by id
     app.delete('/accounts/:id', controllers.accounts.remove);
+
+    // delete transaction
+    app.delete('/transactions/:id', controllers.transactions.remove);
+
+    // delete category by id 
+    app.delete('/categories/:id', controllers.categories.remove);
 };
