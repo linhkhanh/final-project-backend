@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const SALT_ROUND = 10;
+const models = require('../models');
 // A helper function to assert the request ID param is valid
 // and convert it to a number (since it comes as a string by default)
 function getIdParam (req) {
@@ -15,4 +16,12 @@ function hashPassword (password){
     return hashed_password;
 }
 
-module.exports = { getIdParam, hashPassword };
+async function getAllTransactionByUserId (id) {
+    const transactions = await models.transactions.findAll({
+		where: {
+			userId: id
+		}
+    });
+    return transactions;
+}
+module.exports = { getIdParam, hashPassword, getAllTransactionByUserId };
