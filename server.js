@@ -33,13 +33,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true 
 })); // USE SESSION TO LOGIN/LOGOUT
-// app.use(cors({ origin: process.env.FRONT_END_URL || 'http://localhost:3000', credentials: true }));
-if (process.env.NODE_ENV === 'dev') {
-    app.use(cors({
-        origin: process.env.FRONT_END_URL || 'http://localhost:3000'
-    }));
-    //Cors allows backend to deal with react for localhost of frontend without any problem
-}
+app.use(cors({ origin: process.env.FRONT_END_URL || 'http://localhost:3000', credentials: true }));
 
 app.use(express.urlencoded({ extended: false }));
 
