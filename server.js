@@ -33,7 +33,8 @@ app.use(session({
     resave: true,
     saveUninitialized: true,
     cookie : {
-        sameSite: 'none'
+        sameSite: 'none',
+        secure: true
     }
 })); // USE SESSION TO LOGIN/LOGOUT
 app.use(cors({ origin: process.env.FRONT_END_URL || 'http://localhost:3000', credentials: true }));
