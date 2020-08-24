@@ -16,7 +16,7 @@ function hashPassword (password){
     return hashed_password;
 }
 
-async function getAllTransactionByUserId (id) {
+async function getAllTransactions (id) {
     const transactions = await models.transactions.findAll({
 		where: {
 			userId: id
@@ -24,4 +24,4 @@ async function getAllTransactionByUserId (id) {
     });
     return transactions;
 }
-module.exports = { getIdParam, hashPassword, getAllTransactionByUserId };
+module.exports = { getIdParam, hashPassword, getAllTransactions };
