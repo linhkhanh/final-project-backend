@@ -101,20 +101,20 @@ async function getAllTransactionsByCatID(req, res) {
 }
 
 async function getAllTransactionsByUserId(req, res) {
-	if (req.session.userId) {
-		try {
-			const id = getIdParam(req);
-			const transactions = getAllTransactionsByUserId(id);
-			console.log(transactions);
-			httpResponseFormatter.formatOkResponse(res, transactions);
-		} catch (err) {
-			httpResponseFormatter.formatOkResponse(res, {
-				message: err.message
-			});
-		}
-	} else {
-		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
-	}
+    if (req.session.userId) {
+        try {
+            const id = getIdParam(req);
+            const transactions = getAllTransactionsByUserId(id);
+            console.log(transactions);
+            httpResponseFormatter.formatOkResponse(res, transactions);
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, {
+                message: err.message
+            });
+        }
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
 
 }
 
@@ -139,8 +139,16 @@ async function getAllTransactionsByAccountId(req, res) {
     }
 }
 
-async function calculateBalance (req, res) {
+async function calculateBalance(req, res) {
     if (req.session.userId) {
+        const id = getIdParam(req);
+        const sumOfIncome = await models.transaction.findAll({
+            attributes: [
+              'user',
+              [sequelize.fn('sum', sequelize.col('amount')), 'total_amount'],
+            ],
+            group: ['member_id'],
+          });
 
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });

@@ -42,7 +42,7 @@ module.exports = app => {
     app.get('/accounts/:id/transactions', controllers.transactions.getAllTransactionsByAccountId);
 
     // calculate credit, debit and balance of all accounts
-    app.get('/users/:id/accounts/statistic', controllers.transactions.calculateBalance);
+    // app.get('/users/:id/accounts/statistic', controllers.transactions.calculateBalance);
 
     // get All transactions by categories id
     app.get('/transactions/categories/:categoriesID', controllers.transactions.getAllTransactionsByCatID);
