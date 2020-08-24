@@ -8,21 +8,26 @@ const {
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
 
 module.exports = {
-    async loginSubmit (req, res) {
+    async loginSubmit(req, res) {
         try {
             const user = await models.users.findOne({ where: { email: req.body.email } });
 
-            if (!user) httpResponseFormatter.formatOkResponse(res, {
-                err: 'This user doesn\'t exist'
-            });
-            if (bcrypt.compareSync(req.body.password, user.password)) {
-                req.session.userId = user.id;
-                httpResponseFormatter.formatOkResponse(res, user);
-            } else {
+            if (!user) {
                 httpResponseFormatter.formatOkResponse(res, {
-                    err: 'password is wrong'
-                });
+                    err: 'This user doesn\'t exist'
+                })
+            } else {
+                if (bcrypt.compareSync(req.body.password, user.password)) {
+                    req.session.userId = user.id;
+                    console.log(req.session);
+                    httpResponseFormatter.formatOkResponse(res, user);
+                } else {
+                    httpResponseFormatter.formatOkResponse(res, {
+                        err: 'password is wrong'
+                    });
+                }
             }
+
         } catch (err) {
             console.log(err);
             httpResponseFormatter.formatOkResponse(res, {
@@ -40,7 +45,8 @@ module.exports = {
             });
         });
     },
-    async checkAuthentication (req, res) {
+    async checkAuthentication(req, res) {
+        console.log(req.session);
         if (req.session.userId) {
             const user = await models.users.findByPk(req.session.userId);
             httpResponseFormatter.formatOkResponse(res, user);
@@ -50,7 +56,7 @@ module.exports = {
             });
         }
     },
-    async getDataFacebook (req, res) {
+    async getDataFacebook(req, res) {
         const { data } = await axios({
             url: 'https://graph.facebook.com/me',
             method: 'get',
@@ -61,7 +67,7 @@ module.exports = {
         });
         httpResponseFormatter.formatOkResponse(res, data);
     },
-    async logInWithFbOrGoogle (req, res) {
+    async logInWithFbOrGoogle(req, res) {
         try {
             const user = await models.users.findOne({ where: { email: req.body.email } });
             req.session.userId = user.id;
@@ -74,15 +80,15 @@ module.exports = {
         }
     },
 
-    async logInWithGoogle (req, res) {
-        try{
+    async logInWithGoogle(req, res) {
+        try {
             const { idToken } = req.body;
             client.verifyIdToken({
                 idToken,
                 audience: process.env.GOOGLE_CLIENT
-            }).then( response =>{
+            }).then(response => {
                 const { email_verified, name, email } = response.payload;
-                if (email_verified){
+                if (email_verified) {
                     // console.log('valid google email');
                     // console.log('name', name);
                     // console.log('email', email);
@@ -90,11 +96,11 @@ module.exports = {
                     // res.send('ok');
                 }
             });
-        }catch (err) {
+        } catch (err) {
             console.log(err);
             httpResponseFormatter.formatOkResponse(res, {
                 err: err.message
             });
         }
-    } 
+    }
 };

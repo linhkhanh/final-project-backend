@@ -1,5 +1,5 @@
 const models = require('../models');
-const { getIdParam } = require('./helper');
+const { getIdParam, getAllTransactions } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
 async function getAll(req, res) {
@@ -104,7 +104,11 @@ async function getAllTransactionsByUserId(req, res) {
     if (req.session.userId) {
         try {
             const id = getIdParam(req);
-            const transactions = getAllTransactionsByUserId(id);
+            const transactions = await models.transactions.findAll({
+                where: {
+                    userId: id
+                }
+            });
             console.log(transactions);
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
