@@ -1,4 +1,5 @@
 const models = require('../models');
+const { QueryTypes } = require('sequelize');
 const { getIdParam, getAllTransactions } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
@@ -146,14 +147,84 @@ async function getAllTransactionsByAccountId(req, res) {
 async function calculateBalance(req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
-        const sumOfIncome = await models.transaction.findAll({
-            attributes: [
-              'user',
-              [sequelize.fn('sum', sequelize.col('amount')), 'total_amount'],
-            ],
-            group: ['member_id'],
-          });
+        const totalIncome= await models.sequelize.query(`
+        SELECT SUM(amount) as total_income
+            FROM 
+                transactions a, 
+                categories b
+            WHERE b.type = 'income' 
+                AND a."userId" = ${id}
+                AND a."categoryId" = b.id
+        `, { type: QueryTypes.SELECT });
 
+        const totalExpense= await models.sequelize.query(`
+        SELECT SUM(amount) as total_expense
+        FROM 
+            transactions a, 
+            categories b
+        WHERE b.type = 'expense' 
+            AND a."userId" = ${id}
+            AND a."categoryId" = b.id
+        `, { type: QueryTypes.SELECT });
+
+        const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
+
+        httpResponseFormatter.formatOkResponse(res, {
+            totalIncome: totalIncome[0].total_income,
+            totalExpense: totalExpense[0].total_expense, 
+            balance: balance
+        });
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
+
+async function eachAccount (req, res) {
+    if(req.session.userId) {
+        const id = getIdParam(req);
+        const allAccounts = await models.accounts.findAll({
+            where: {
+                userId: id
+            }
+        });
+        const accountDetail = [];
+        for(let i = 0; i < allAccounts.length; i++) {
+            const totalIncome = await models.sequelize.query(`
+            SELECT SUM(amount) as total_income
+            FROM 
+                transactions a, 
+                categories b,
+                accounts c
+            WHERE b.type = 'income' 
+                AND c.id = ${allAccounts[i].id}
+                AND a."categoryId" = b.id
+                AND a."accountId" = c.id;
+            `);
+            const totalExpense = await models.sequelize.query(`
+            SELECT SUM(amount) as total_expense
+            FROM 
+                transactions a, 
+                categories b,
+                accounts c
+            WHERE b.type = 'expense' 
+                AND c.id = ${allAccounts[i].id}
+                AND a."categoryId" = b.id
+                AND a."accountId" = c.id;
+            `);
+            if(!totalIncome[0][0].total_income) totalIncome[0].total_income = 0;
+            if(!totalExpense[0][0].total_expense) totalExpense[0].total_expense = 0;
+
+            const balance = totalIncome[0][0].total_income - totalExpense[0][0].total_expense;
+            accountDetail.push({
+                accounId: allAccounts[i].id,
+                balance: balance
+            })
+        }
+        console.log("detail", accountDetail);
+        if(accountDetail) {
+            httpResponseFormatter.formatOkResponse(res, accountDetail);
+        }
+       
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
     }
@@ -167,5 +238,6 @@ module.exports = {
     getAllTransactionsByCatID,
     getAllTransactionsByUserId,
     getAllTransactionsByAccountId,
-    calculateBalance
+    calculateBalance,
+    eachAccount
 };

@@ -87,7 +87,6 @@ async function getAllAccounts(req, res) {
 					userId: id
 				}
 			});
-			console.log(accounts);
 			httpResponseFormatter.formatOkResponse(res, accounts);
 		} catch (err) {
 			httpResponseFormatter.formatOkResponse(res, { message: err.message });
@@ -97,7 +96,7 @@ async function getAllAccounts(req, res) {
 		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
 	}
 }
-
+ 
 
 module.exports = {
     getAll,
