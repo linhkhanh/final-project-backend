@@ -216,7 +216,7 @@ async function eachAccount (req, res) {
 
             const balance = totalIncome[0][0].total_income - totalExpense[0][0].total_expense;
             accountDetail.push({
-                accounId: allAccounts[i].id,
+                accountId: allAccounts[i].id,
                 balance: balance
             })
         }
