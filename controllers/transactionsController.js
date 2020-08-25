@@ -167,6 +167,8 @@ async function calculateBalance(req, res) {
             AND a."categoryId" = b.id
         `, { type: QueryTypes.SELECT });
 
+        if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+        if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
         const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
 
         httpResponseFormatter.formatOkResponse(res, {
