@@ -197,11 +197,11 @@ async function eachAccount (req, res) {
                 transactions a, 
                 categories b,
                 accounts c
-            WHERE b.type = 'income' 
+            WHERE b.type = 'income'
                 AND c.id = ${allAccounts[i].id}
                 AND a."categoryId" = b.id
                 AND a."accountId" = c.id;
-            `);
+            `, { type: QueryTypes.SELECT });
             const totalExpense = await models.sequelize.query(`
             SELECT SUM(amount) as total_expense
             FROM 
@@ -212,20 +212,19 @@ async function eachAccount (req, res) {
                 AND c.id = ${allAccounts[i].id}
                 AND a."categoryId" = b.id
                 AND a."accountId" = c.id;
-            `);
-            if(!totalIncome[0][0].total_income) totalIncome[0].total_income = 0;
-            if(!totalExpense[0][0].total_expense) totalExpense[0].total_expense = 0;
+            `, { type: QueryTypes.SELECT });
+            if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+            if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
 
-            const balance = totalIncome[0][0].total_income - totalExpense[0][0].total_expense;
+            const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
             accountDetail.push({
                 accountId: allAccounts[i].id,
                 balance: balance
             })
         }
         console.log("detail", accountDetail);
-        if(accountDetail) {
-            httpResponseFormatter.formatOkResponse(res, accountDetail);
-        }
+
+        httpResponseFormatter.formatOkResponse(res, accountDetail);
        
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
