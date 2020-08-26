@@ -41,6 +41,12 @@ module.exports = app => {
     // get all transactions by account id
     app.get('/accounts/:id/transactions', controllers.transactions.getAllTransactionsByAccountId);
 
+    // calculate total money by categories 
+    app.get('/users/:id/categories/income', controllers.categories.calculateMoneyIncome);
+
+     // calculate total money by categories 
+     app.get('/users/:id/categories/expense', controllers.categories.calculateMoneyExpense);
+
     // calculate credit, debit and balance of all accounts
     app.get('/users/:id/accounts/statistic', controllers.transactions.calculateBalance);
 
