@@ -54,7 +54,7 @@ module.exports = app => {
     app.get('/users/:id/accounts/statistic/each', controllers.transactions.eachAccount);
 
     // get All transactions by categories id
-    app.get('/transactions/categories/:categoriesID', controllers.transactions.getAllTransactionsByCatID);
+    app.get('/transactions/categories/:id', controllers.transactions.getAllTransactionsByCatID);
 
 
     // create new user

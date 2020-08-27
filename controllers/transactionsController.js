@@ -86,10 +86,12 @@ async function getAllTransactionsByCatID(req, res) {
 
             const transactions = await models.transactions.findAll({
                 where: {
+                    userId: req.session.userId,
                     categoryId: id
                 }
             })
-            console.log(transactions);
+           
+            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt);
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -110,7 +112,7 @@ async function getAllTransactionsByUserId(req, res) {
                     userId: id
                 }
             });
-            console.log(transactions);
+            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -133,6 +135,7 @@ async function getAllTransactionsByAccountId(req, res) {
                     accountId: id
                 }
             });
+            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -202,6 +205,7 @@ async function eachAccount (req, res) {
                 AND a."categoryId" = b.id
                 AND a."accountId" = c.id;
             `, { type: QueryTypes.SELECT });
+
             const totalExpense = await models.sequelize.query(`
             SELECT SUM(amount) as total_expense
             FROM 
