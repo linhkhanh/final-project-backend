@@ -234,6 +234,69 @@ async function eachAccount (req, res) {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
     }
 }
+
+async function calculateTransactionsIncome (req, res) {
+    if(req.session.userId) {
+        const id = getIdParam(req);
+       
+        try {
+            const transactionsIncome = await models.sequelize.query(`
+            select sum(amount) as transactions_income, DATE("paidAt") 
+            from 
+                transactions a,
+                categories b
+            where a."userId" = ${id}
+                and b."type" = 'income'
+                and a."categoryId" = b.id
+            group by DATE("paidAt")
+            `, { type: QueryTypes.SELECT });
+
+            const data = {};
+            for(let i = 0; i < transactionsIncome.length; i++) {
+                data[transactionsIncome[i].date] = (+transactionsIncome[i].transactions_income/100).toFixed(2);
+            }
+
+            httpResponseFormatter.formatOkResponse(res, data );
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, { message: err.message });
+        }
+
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
+
+async function calculateTransactionsExpense (req, res) {
+    if(req.session.userId) {
+        const id = getIdParam(req);
+       
+        try {
+            const transactionsExpense = await models.sequelize.query(`
+            select sum(amount) as transactions_expense, DATE("paidAt") 
+            from 
+                transactions a,
+                categories b
+            where a."userId" = ${id}
+                and b."type" = 'expense'
+                and a."categoryId" = b.id
+            group by DATE("paidAt")
+            `, { type: QueryTypes.SELECT });
+
+            const data = {};
+            for(let i = 0; i < transactionsExpense.length; i++) {
+                data[transactionsExpense[i].date] = (+transactionsExpense[i].transactions_expense/100).toFixed(2);
+            }
+
+            httpResponseFormatter.formatOkResponse(res, data );
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, { message: err.message });
+        }
+
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -244,5 +307,7 @@ module.exports = {
     getAllTransactionsByUserId,
     getAllTransactionsByAccountId,
     calculateBalance,
-    eachAccount
+    eachAccount,
+    calculateTransactionsIncome,
+    calculateTransactionsExpense
 };

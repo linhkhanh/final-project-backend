@@ -118,7 +118,7 @@ async function calculateMoneyIncome(req, res) {
 
                 if(totalMoney[0].total) inComeDetail.push({
                     categoryId: categories[i].id,
-                    total: totalMoney[0].total
+                    total: (totalMoney[0].total/100).toFixed(2)
                 })
             }
             httpResponseFormatter.formatOkResponse(res, inComeDetail);
@@ -160,7 +160,7 @@ async function calculateMoneyExpense(req, res) {
 
                 if(totalMoney[0].total) expenseDetail.push({
                     categoryId: categories[i].id,
-                    total: totalMoney[0].total
+                    total: (totalMoney[0].total/100).toFixed(2)
                 })
             }
             httpResponseFormatter.formatOkResponse(res, expenseDetail);
