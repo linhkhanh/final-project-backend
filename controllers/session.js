@@ -6,6 +6,7 @@ const {
     OAuth2Client
 } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
+const { getIdParam, hashPassword, getAllTransactionsByUserId } = require('./helper');
 
 module.exports = {
     async loginSubmit (req, res) {
@@ -19,6 +20,7 @@ module.exports = {
             } else {
                 if (bcrypt.compareSync(req.body.password, user.password)) {
                     req.session.userId = user.id;
+                    console.log(typeof(user.id));
                     console.log(req.session);
                     httpResponseFormatter.formatOkResponse(res, user);
                 } else {
@@ -88,35 +90,48 @@ module.exports = {
             client.verifyIdToken({
                 idToken,
                 audience: process.env.GOOGLE_CLIENT
-            }).then(async response => {
+            }).then( async response => {
                 const { email_verified, name, email } = response.payload;
                 if (email_verified) {
                     // console.log('after email verified', email_verified);
-                    const user = await models.users.findOne({ where: { email: email } });
-                    if (!user) {
-                        console.log('no user? ');
-                        try{
-                            const newUser = await models.users.create({
-                                username: name,
-                                email: email,
-                                password: process.env.GOOGLE_USER_PASSWORD
-                            });
-                            req.session.userId = user.id;
-                            httpResponseFormatter.formatOkResponse(res, newUser);
-                        } catch(err){
+                    try{
+                        const user = await models.users.findOne({ where: { email: email } });
+                        if (!user) {
+                            console.log('no user? ');
+                            try{
+                                const newUser = await models.users.create({
+                                    username: name,
+                                    email: email,
+                                    password: hashPassword(process.env.GOOGLE_USER_PASSWORD)
+                                });
+                                if(newUser){
+                                    req.session.userId = newUser.id;
+                                    console.log(req.session);
+                                    httpResponseFormatter.formatOkResponse(res, newUser);
+                                }
+                            } catch(err){
                             // console.log(err);
-                            httpResponseFormatter.formatOkResponse(res, {
-                                err: err.message
-                            });
+                                httpResponseFormatter.formatOkResponse(res, {
+                                    err: err.message
+                                });
+                            }
                         }
-                    }
-                    else {
+                        else {
                         // console.log('assign session? ');
-                        req.session.userId = user.id;
-                        // console.log(req.session);
-                        // console.log(user);
-                        httpResponseFormatter.formatOkResponse(res, user);
+                            req.session.userId = user.id;
+                            console.log(typeof(user.id));
+                            console.log('session after login', req.session);
+                            // console.log(user);
+                            httpResponseFormatter.formatOkResponse(res, user);
+                        }
+
+                    }catch(err){
+                        // console.log(err);
+                        httpResponseFormatter.formatOkResponse(res, {
+                            err: err.message
+                        });
                     }
+                    
                 }
             });
         } catch (err) {
