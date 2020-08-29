@@ -30,15 +30,25 @@ app.set('trust proxy', 1);
 
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
-app.use(session({ 
-    secret: 'randomsecret',
-    resave: true,
-    saveUninitialized: true,
-    cookie:{
-        sameSite:'none',
-        secure: true
-    }
-})); // USE SESSION TO LOGIN/LOGOUT
+
+// USE SESSION TO LOGIN/LOGOUT
+if (process.env.NODE_ENV !== 'production') {
+    app.use(session({ 
+        secret: 'randomsecret',
+        resave: true,
+        saveUninitialized: true,
+    }));
+} else{
+    app.use(session({ 
+        secret: 'randomsecret',
+        resave: true,
+        saveUninitialized: true,
+        cookie:{
+            sameSite:'none',
+            secure: true
+        }
+    }));
+}
 app.use(cors({ origin: process.env.FRONT_END_URL || 'http://localhost:3000', credentials: true }));
 
 app.use(express.urlencoded({ extended: false }));
