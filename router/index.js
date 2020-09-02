@@ -6,6 +6,9 @@ const controllers = {
     categories: require('../controllers/categoriesController')
 };
 
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
 module.exports = app => {
 
     // check Authentication
@@ -76,6 +79,12 @@ module.exports = app => {
 
     // log in with fb-google
     app.post('/users/log_in_fb_google', controllers.session.logInWithFbOrGoogle);
+
+    // Import statement
+    app.post('/users/import', upload.single('file'), controllers.users.importStatement);
+
+    // Training data
+    app.post('/users/training', upload.single('file'), controllers.users.importTrainingData);
 
     // CREATE NEW ACCOUNT
     app.post('/accounts/new', controllers.accounts.create);

@@ -1,6 +1,6 @@
 'use strict';
 
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize } = require('sequelize');
 const env = process.env.NODE_ENV || 'development';
 
 const db = {};
@@ -30,7 +30,12 @@ const modelDefiners = [
     {
         name: 'categories',
         model: require('./tables/categories')
+    },
+    {
+        name: 'trainingData',
+        model: require('./tables/trainingData')
     }
+
 ];
 
 // We define all models according to their files.
