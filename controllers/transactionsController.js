@@ -92,6 +92,7 @@ async function getAllTransactionsByCatID(req, res) {
             })
            
             transactions.sort((item1, item2) => item1.paidAt - item2.paidAt);
+            
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
