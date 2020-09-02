@@ -32,6 +32,9 @@ module.exports = app => {
     //get user by Id
     app.get('/users/:id', controllers.users.getById);
 
+    //get account by id
+    app.get('/accounts/:id', controllers.accounts.getById);
+
     // get transaction by id
     app.get('/transactions/:id', controllers.transactions.getById);
 

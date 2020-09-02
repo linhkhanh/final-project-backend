@@ -124,7 +124,6 @@ module.exports = {
                             // console.log(user);
                             httpResponseFormatter.formatOkResponse(res, user);
                         }
-
                     }catch(err){
                         // console.log(err);
                         httpResponseFormatter.formatOkResponse(res, {
@@ -133,7 +132,9 @@ module.exports = {
                     }
                     
                 }
-            });
+            }).catch(err=>
+                console.log(err)
+            );
         } catch (err) {
             console.log(err);
             httpResponseFormatter.formatOkResponse(res, {

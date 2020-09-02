@@ -2,7 +2,7 @@ const models = require('../models');
 const { getIdParam } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
 
-async function getAll(req, res) {
+async function getAll (req, res) {
     if (req.session.userId) {
         const accounts = await models.accounts.findAll();
         httpResponseFormatter.formatOkResponse(res, accounts);
@@ -11,7 +11,7 @@ async function getAll(req, res) {
     }
 }
 
-async function getById(req, res) {
+async function getById (req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         const account = await models.accounts.findByPk(id);
@@ -25,7 +25,7 @@ async function getById(req, res) {
     }
 }
 
-async function create(req, res) {
+async function create (req, res) {
     if (!req.session.userId) {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in' });
     } else {
@@ -40,7 +40,7 @@ async function create(req, res) {
     }
 }
 
-async function update(req, res) {
+async function update (req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         try {
@@ -59,7 +59,7 @@ async function update(req, res) {
 
 }
 
-async function remove(req, res) {
+async function remove (req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         try {
@@ -78,23 +78,23 @@ async function remove(req, res) {
 
 }
 
-async function getAllAccounts(req, res) {
-	if (req.session.userId) {
-		try {
-			const id = getIdParam(req);
-			const accounts = await models.accounts.findAll({
-				where: {
-					userId: id
-				}
-			});
-			httpResponseFormatter.formatOkResponse(res, accounts);
-		} catch (err) {
-			httpResponseFormatter.formatOkResponse(res, { message: err.message });
-		}
+async function getAllAccounts (req, res) {
+    if (req.session.userId) {
+        try {
+            const id = getIdParam(req);
+            const accounts = await models.accounts.findAll({
+                where: {
+                    userId: id
+                }
+            });
+            httpResponseFormatter.formatOkResponse(res, accounts);
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, { message: err.message });
+        }
 
-	} else {
-		httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
-	}
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
 }
  
 
