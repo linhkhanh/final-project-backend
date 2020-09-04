@@ -38,6 +38,9 @@ module.exports = app => {
     // get transaction by id
     app.get('/transactions/:id', controllers.transactions.getById);
 
+    // get category by id
+    app.get('/categories/:id', controllers.categories.getById);
+
     // get all accounts by user id
     app.get('/users/:id/accounts', controllers.accounts.getAllAccounts);
 
@@ -78,7 +81,7 @@ module.exports = app => {
     app.post('/users/googlelogin', controllers.session.logInWithGoogle);
 
     // get data from facebook
-    app.post('users/get_data_fb', controllers.session.getDataFacebook);
+    app.post('/users/get_data_fb', controllers.session.getDataFacebook);
 
     // log in with fb-google
     app.post('/users/log_in_fb_google', controllers.session.logInWithFbOrGoogle);
@@ -96,7 +99,7 @@ module.exports = app => {
     app.post('/transactions/new', controllers.transactions.create);
 
     // CREATE NEW CATEGORIES
-    app.post('/categories/new', controllers.categories.create);
+    app.post('  ', controllers.categories.create);
 
     //update user by id
     app.put('/users/:id', controllers.users.update);

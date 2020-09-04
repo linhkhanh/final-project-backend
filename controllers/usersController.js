@@ -123,41 +123,16 @@ async function importStatement(req, res, next) {
 						editedResult.push({
 							amount: (Math.abs(results[i].amount) * 100).toFixed(0),
 							description: results[i].description,
-							paidAt: moment(results[i].date, "dd/mm/yyyy").format(),
+							paidAt: moment(results[i].date,'DD/MM/YYYY', true).format(),
 							accountId: +req.body.accountId,
 							categoryId: categoryId,
 							userId: req.session.userId
 						})
 					}
-		
+					console.log(editedResult);
 					// add to transactions table	
 					await models.transactions.bulkCreate(editedResult);
 				});
-
-			//////////////////////////////
-
-			// var allRows = [];
-			// var rows = {};
-
-			// new pdfreader.PdfReader().parseFileItems(req.file.path, function (err, item) {
-			// 	if (!item || item.page) {
-			// 		if (item) {
-			// 			console.log(item.page);
-			// 		}
-			// 		var newRows = Object.keys(rows) // => array of y-positions (type: float)
-			// 			.sort((y1, y2) => parseFloat(y1) - parseFloat(y2)) // sort float positions
-			// 			.map(y => rows[y]);
-
-			// 		allRows.push(newRows.map((row) => row.join("")));
-			// 		rows = {};
-
-			// 	} else if (item) {
-			// 		(rows[item.y] = rows[item.y] || []).push(item.text || ' ');
-			// 	}
-			// });
-
-
-			// console.log(allRows);
 
 			httpResponseFormatter.formatOkResponse(res, {
 				message: "Import data successfully.",

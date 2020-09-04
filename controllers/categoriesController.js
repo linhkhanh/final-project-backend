@@ -11,9 +11,9 @@ async function getAll(req, res) {
 async function getById(req, res) {
     const id = getIdParam(req);
     try {
-        const categories = await models.categories.findByPk(id);
-        if (categories) {
-            httpResponseFormatter.formatOkResponse(res, categories);
+        const category = await models.categories.findByPk(id);
+        if (category) {
+            httpResponseFormatter.formatOkResponse(res, category);
         } else {
             httpResponseFormatter.formatOkResponse(res, { message: 'This category doesn\'t exist.' });
         }

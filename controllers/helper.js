@@ -16,12 +16,4 @@ function hashPassword (password){
     return hashed_password;
 }
 
-async function getAllTransactions (id) {
-    const transactions = await models.transactions.findAll({
-		where: {
-			userId: id
-		}
-    });
-    return transactions;
-}
-module.exports = { getIdParam, hashPassword, getAllTransactions };
+module.exports = { getIdParam, hashPassword };

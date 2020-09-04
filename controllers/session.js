@@ -6,7 +6,8 @@ const {
     OAuth2Client
 } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
-const { getIdParam, hashPassword, getAllTransactionsByUserId } = require('./helper');
+const { getIdParam, hashPassword } = require('./helper');
+const generator = require('generate-password');
 
 module.exports = {
     async loginSubmit (req, res) {
@@ -59,15 +60,42 @@ module.exports = {
         }
     },
     async getDataFacebook (req, res) {
-        const { data } = await axios({
-            url: 'https://graph.facebook.com/me',
-            method: 'get',
-            params: {
-                fields: ['email', 'first_name', 'last_name'].join(','),
-                access_token: req.body.accessToken,
-            },
-        });
-        httpResponseFormatter.formatOkResponse(res, data);
+        try {
+            const { data } = await axios({
+                url: 'https://graph.facebook.com/me',
+                method: 'get',
+                params: {
+                    fields: ['email', 'first_name', 'last_name'].join(','),
+                    access_token: req.body.accessToken,
+                },
+            });
+
+            const user = await models.users.findOne({ where: { email: data.email } });
+            if(user) {
+                req.session.userId = user.id;
+                httpResponseFormatter.formatOkResponse(res, user);
+            } else {
+                await models.users.create({
+                    username: `${data.first_name} ${data.last_name}`,
+                    email: data.email,
+                    password: generator.generate({
+                        length: 10,
+                        numbers: true
+                    })
+                });
+                const user = await models.users.findOne({ where: { email: data.email } });
+                req.session.userId = user.id;
+                httpResponseFormatter.formatOkResponse(res, user);
+            }   
+           
+        } catch (err) {
+            console.log(err);
+           
+            httpResponseFormatter.formatOkResponse(res, {
+                err: 'Can not log in with Facebook.'
+            });
+        }
+        
     },
 
     async logInWithFbOrGoogle (req, res) {
@@ -124,7 +152,6 @@ module.exports = {
                             // console.log(user);
                             httpResponseFormatter.formatOkResponse(res, user);
                         }
-
                     }catch(err){
                         // console.log(err);
                         httpResponseFormatter.formatOkResponse(res, {
@@ -133,7 +160,9 @@ module.exports = {
                     }
                     
                 }
-            });
+            }).catch(err=>
+                console.log(err)
+            );
         } catch (err) {
             console.log(err);
             httpResponseFormatter.formatOkResponse(res, {
