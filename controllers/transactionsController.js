@@ -298,6 +298,28 @@ async function calculateTransactionsExpense (req, res) {
     }
 }
 
+async function filterTransactions (req, res) {
+    if(req.session.userId) {
+        try {
+            const filteredTransactions = await models.transactions.findAll({
+                where: {
+                    userId: req.session.userId,
+                    paidAt: {
+                        [Op.gte]: req.body.startDate,
+                        [Op.lte]: req.body.endDate
+                    }
+                }
+            })
+            httpResponseFormatter.formatOkResponse(res, filteredTransactions );
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, {
+                message: err.message
+            } );
+        }
+    } {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
 module.exports = {
     getAll,
     getById,
@@ -310,5 +332,6 @@ module.exports = {
     calculateBalance,
     eachAccount,
     calculateTransactionsIncome,
-    calculateTransactionsExpense
+    calculateTransactionsExpense,
+    filterTransactions
 };

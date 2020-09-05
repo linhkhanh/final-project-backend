@@ -85,7 +85,7 @@ async function remove(req, res) {
 	httpResponseFormatter.formatOkResponse(res, { message: 'Delete successfully.' });
 }
 
-async function findCategoryId (allCategories, name) {
+async function findCategoryId(allCategories, name) {
 	const category = allCategories.find(item => item.name.toLowerCase() === name.toLowerCase());
 	return category.id;
 }
@@ -95,7 +95,7 @@ async function importStatement(req, res, next) {
 		try {
 			const results = [];
 			const editedResult = [];
-			const stateJson = await models.trainingData.findAll();
+			
 			const allCategories = await models.categories.findAll();
 			const categoriesIncome = await models.categories.findAll({
 				where: {
@@ -108,28 +108,30 @@ async function importStatement(req, res, next) {
 					type: "expense"
 				}
 			});
-			
-			const revivedClassifier = bayes.fromJson(stateJson[0].data);
+
+			const stateJson = await models.trainingData.findOne({
+				order: [['createdAt', 'DESC']]
+			});
+			const revivedClassifier = bayes.fromJson(stateJson.data);
 
 			fs.createReadStream(req.file.path)
 				.pipe(csv(['date', 'description', 'amount', 'empty', 'account']))
 				.on('data', (data) => results.push(data))
 				.on('end', async () => {
 					// console.log(results);
-					for(let i = 0; i < results.length; i++) {
+					for (let i = 0; i < results.length; i++) {
 						const categoryName = await revivedClassifier.categorize(results[i].description);
 						const categoryId = await findCategoryId(allCategories, categoryName);
-						if(!categoryId) results[i].amount < 0 ? categoryId = categoriesExpense[10] : categoryId = categoriesIncome[3];
+						if (!categoryId) results[i].amount < 0 ? categoryId = categoriesExpense[10] : categoryId = categoriesIncome[3];
 						editedResult.push({
 							amount: (Math.abs(results[i].amount) * 100).toFixed(0),
 							description: results[i].description,
-							paidAt: moment(results[i].date,'DD/MM/YYYY', true).format(),
+							paidAt: moment(results[i].date, 'DD/MM/YYYY', true).format(),
 							accountId: +req.body.accountId,
 							categoryId: categoryId,
 							userId: req.session.userId
 						})
 					}
-					console.log(editedResult);
 					// add to transactions table	
 					await models.transactions.bulkCreate(editedResult);
 				});
@@ -153,24 +155,47 @@ async function importStatement(req, res, next) {
 async function importTrainingData(req, res, next) {
 	try {
 		console.log(req.file);
-
 		const results = [];
-		fs.createReadStream(req.file.path)
-			.pipe(csv(['date', 'description', 'amount', 'empty', 'account', 'category']))
-			.on('data', (data) => results.push(data))
-			.on('end', async () => {
-				// console.log(results);
+		const stateJson = await models.trainingData.findOne({
+			order: [['createdAt', 'DESC']]
+		});
 
-				for (let i = 0; i < results.length; i++) {
-					await classifier.learn(results[i].description, results[i].category)
-				}
+		if (stateJson) {
+			const revivedClassifier = bayes.fromJson(stateJson.data);
 
-				const stateJson = classifier.toJson();
-				await models.trainingData.create({data: stateJson});
-			});
-			httpResponseFormatter.formatOkResponse(res, {
-				message: "Import data successfully.",
-			});
+			fs.createReadStream(req.file.path)
+				.pipe(csv(['date', 'description', 'amount', 'empty', 'account', 'category']))
+				.on('data', (data) => results.push(data))
+				.on('end', async () => {
+					// console.log(results);
+
+					for (let i = 0; i < results.length; i++) {
+						await revivedClassifier.learn(results[i].description, results[i].category)
+					}
+
+					const newStateJson = revivedClassifier.toJson();
+					await models.trainingData.create({ data: newStateJson });
+				});
+		} else {
+
+			fs.createReadStream(req.file.path)
+				.pipe(csv(['date', 'description', 'amount', 'empty', 'account', 'category']))
+				.on('data', (data) => results.push(data))
+				.on('end', async () => {
+					// console.log(results);
+
+					for (let i = 0; i < results.length; i++) {
+						await classifier.learn(results[i].description, results[i].category)
+					}
+
+					const newStateJson = classifier.toJson();
+					await models.trainingData.create({ data: newStateJson });
+				});
+		}
+		httpResponseFormatter.formatOkResponse(res, {
+			message: "Import data successfully.",
+		});
+
 	} catch (err) {
 		console.log(err);
 		httpResponseFormatter.formatOkResponse(res, {

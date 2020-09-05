@@ -92,6 +92,9 @@ module.exports = app => {
     // Training data
     app.post('/users/training', upload.single('file'), controllers.users.importTrainingData);
 
+    // Get filtered transactions
+    app.post('/transactions/filter', controllers.transactions.filterTransactions);
+
     // CREATE NEW ACCOUNT
     app.post('/accounts/new', controllers.accounts.create);
 
@@ -99,7 +102,7 @@ module.exports = app => {
     app.post('/transactions/new', controllers.transactions.create);
 
     // CREATE NEW CATEGORIES
-    app.post('  ', controllers.categories.create);
+    app.post('/categories/new', controllers.categories.create);
 
     //update user by id
     app.put('/users/:id', controllers.users.update);
