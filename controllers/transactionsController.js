@@ -2,13 +2,9 @@ const models = require('../models');
 const { QueryTypes } = require('sequelize');
 const { getIdParam, getAllTransactions } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
-<<<<<<< HEAD
 const { Op } = require("sequelize");
-=======
-const { Op } = require('sequelize');
->>>>>>> f94fae1eb10d61af0836e5049e3eb414a29e3c21
 
-async function getAll (req, res) {
+async function getAll(req, res) {
     if (req.session.userId) {
         const transactions = await models.transactions.findAll();
         httpResponseFormatter.formatOkResponse(res, transactions);
@@ -17,7 +13,7 @@ async function getAll (req, res) {
     }
 }
 
-async function getById (req, res) {
+async function getById(req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         try {
@@ -31,12 +27,12 @@ async function getById (req, res) {
     }
 }
 
-async function create (req, res) {
+async function create(req, res) {
     if (!req.session.userId) {
-        httpResponseFormatter.formatOkResponse(res, { message: ' Your need to login.' });
+        httpResponseFormatter.formatOkResponse(res, { message: " Your need to login." });
     } else {
         try {
-            req.body.userId = req.session.userId;
+            req.body.userId = req.session.userId
             await models.transactions.create(req.body);
             httpResponseFormatter.formatOkResponse(res, { message: 'A new transaction is created.' });
         } catch (err) {
@@ -45,7 +41,7 @@ async function create (req, res) {
     }
 }
 
-async function update (req, res) {
+async function update(req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         try {
@@ -56,7 +52,7 @@ async function update (req, res) {
             });
             httpResponseFormatter.formatOkResponse(res, { message: 'Update successfully.' });
         } catch (err) {
-            httpResponseFormatter.formatOkResponse(res, { message: 'You don\'t have this transaction' });
+            httpResponseFormatter.formatOkResponse(res, { message: "You don't have this transaction" });
         }
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in' });
@@ -64,7 +60,7 @@ async function update (req, res) {
 
 }
 
-async function remove (req, res) {
+async function remove(req, res) {
     if (req.session.userId) {
         try {
             const id = getIdParam(req);
@@ -84,7 +80,7 @@ async function remove (req, res) {
 
 }
 
-async function getAllTransactionsByCatID (req, res) {
+async function getAllTransactionsByCatID(req, res) {
     if (req.session.userId) {
         try {
             const id = getIdParam(req);
@@ -94,9 +90,9 @@ async function getAllTransactionsByCatID (req, res) {
                     userId: req.session.userId,
                     categoryId: id
                 }
-            });
+            })
            
-            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt);
+            transactions.sort((item1, item2) => item2.paidAt - item1.paidAt); 
             
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
@@ -109,7 +105,7 @@ async function getAllTransactionsByCatID (req, res) {
     }
 }
 
-async function getAllTransactionsByUserId (req, res) {
+async function getAllTransactionsByUserId(req, res) {
     if (req.session.userId) {
         try {
             const id = getIdParam(req);
@@ -118,7 +114,7 @@ async function getAllTransactionsByUserId (req, res) {
                     userId: id
                 }
             });
-            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt);
+            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -131,7 +127,7 @@ async function getAllTransactionsByUserId (req, res) {
 
 }
 
-async function getAllTransactionsByAccountId (req, res) {
+async function getAllTransactionsByAccountId(req, res) {
     if (req.session.userId) {
 
         try {
@@ -141,7 +137,7 @@ async function getAllTransactionsByAccountId (req, res) {
                     accountId: id
                 }
             });
-            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt);
+            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -153,7 +149,7 @@ async function getAllTransactionsByAccountId (req, res) {
     }
 }
 
-async function calculateBalance (req, res) {
+async function calculateBalance(req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
         const totalIncome= await models.sequelize.query(`
@@ -230,9 +226,9 @@ async function eachAccount (req, res) {
             accountDetail.push({
                 accountId: allAccounts[i].id,
                 balance: balance
-            });
+            })
         }
-        console.log('detail', accountDetail);
+        console.log("detail", accountDetail);
 
         httpResponseFormatter.formatOkResponse(res, accountDetail);
        
@@ -306,11 +302,7 @@ async function calculateTransactionsExpense (req, res) {
 async function filterTransactions (req, res) {
     if(req.session.userId) {
         try {
-<<<<<<< HEAD
             console.log('end', req.body);
-=======
-            console.log('filtered', req.body);
->>>>>>> f94fae1eb10d61af0836e5049e3eb414a29e3c21
             const filteredTransactions = await models.transactions.findAll({
                 where: {
                     userId: req.session.userId,
@@ -319,13 +311,7 @@ async function filterTransactions (req, res) {
                         [Op.lte]: req.body.endDate
                     }
                 }
-<<<<<<< HEAD
             })
-        console.log(filterTransactions);
-=======
-            });
-            
->>>>>>> f94fae1eb10d61af0836e5049e3eb414a29e3c21
             httpResponseFormatter.formatOkResponse(res, filteredTransactions );
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
