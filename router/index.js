@@ -92,14 +92,14 @@ module.exports = app => {
     // Training data
     app.post('/users/training', upload.single('file'), controllers.users.importTrainingData);
 
-    // Get filtered transactions
-    app.post('/transactions/filter', controllers.transactions.filterTransactions);
-
     // CREATE NEW ACCOUNT
     app.post('/accounts/new', controllers.accounts.create);
 
     // create NEW TRANSACTION
     app.post('/transactions/new', controllers.transactions.create);
+
+     // Get filtered transactions
+     app.post('/transactions/filter', controllers.transactions.filterTransactions);
 
     // CREATE NEW CATEGORIES
     app.post('/categories/new', controllers.categories.create);

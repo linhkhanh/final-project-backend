@@ -13,8 +13,7 @@ module.exports = (sequelize) => {
         },
         name: {
             allowNull: false,
-            type: DataTypes.STRING,
-            unique: true
+            type: DataTypes.STRING
         },
         type: {
             allowNull: false,
@@ -26,5 +25,13 @@ module.exports = (sequelize) => {
         updatedAt: {
             type: DataTypes.DATE
         }
-    });
+    },
+        {
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['name', 'type']
+                }
+            ]
+        });
 };

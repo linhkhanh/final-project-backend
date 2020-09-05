@@ -87,6 +87,7 @@ async function remove(req, res) {
 
 async function findCategoryId(allCategories, name) {
 	const category = allCategories.find(item => item.name.toLowerCase() === name.toLowerCase());
+	if(!category) return false;
 	return category.id;
 }
 
@@ -121,7 +122,7 @@ async function importStatement(req, res, next) {
 					// console.log(results);
 					for (let i = 0; i < results.length; i++) {
 						const categoryName = await revivedClassifier.categorize(results[i].description);
-						const categoryId = await findCategoryId(allCategories, categoryName);
+						let categoryId = await findCategoryId(allCategories, categoryName);
 						if (!categoryId) results[i].amount < 0 ? categoryId = categoriesExpense[10] : categoryId = categoriesIncome[3];
 						editedResult.push({
 							amount: (Math.abs(results[i].amount) * 100).toFixed(0),

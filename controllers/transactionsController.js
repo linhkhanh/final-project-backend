@@ -2,6 +2,7 @@ const models = require('../models');
 const { QueryTypes } = require('sequelize');
 const { getIdParam, getAllTransactions } = require('./helper');
 const httpResponseFormatter = require('../formatters/httpResponse');
+const { Op } = require("sequelize");
 
 async function getAll(req, res) {
     if (req.session.userId) {
@@ -301,6 +302,7 @@ async function calculateTransactionsExpense (req, res) {
 async function filterTransactions (req, res) {
     if(req.session.userId) {
         try {
+            console.log('end', req.body);
             const filteredTransactions = await models.transactions.findAll({
                 where: {
                     userId: req.session.userId,
@@ -310,6 +312,7 @@ async function filterTransactions (req, res) {
                     }
                 }
             })
+        console.log(filterTransactions);
             httpResponseFormatter.formatOkResponse(res, filteredTransactions );
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {

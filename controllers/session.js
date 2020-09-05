@@ -6,7 +6,6 @@ const {
     OAuth2Client
 } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT);
-const { getIdParam, hashPassword } = require('./helper');
 const generator = require('generate-password');
 
 module.exports = {
@@ -130,7 +129,10 @@ module.exports = {
                                 const newUser = await models.users.create({
                                     username: name,
                                     email: email,
-                                    password: hashPassword(process.env.GOOGLE_USER_PASSWORD)
+                                    password: generator.generate({
+                                        length: 10,
+                                        numbers: true
+                                    })
                                 });
                                 if(newUser){
                                     req.session.userId = newUser.id;
