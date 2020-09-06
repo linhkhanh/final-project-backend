@@ -62,6 +62,7 @@ module.exports = app => {
     // calculate balance of each account
     app.get('/users/:id/accounts/statistic/each', controllers.transactions.eachAccount);
 
+
     // calculate transactions type income 
     app.get('/users/:id/transactions/income', controllers.transactions.calculateTransactionsIncome);
 
@@ -70,6 +71,9 @@ module.exports = app => {
 
     // get All transactions by categories id
     app.get('/transactions/categories/:id', controllers.transactions.getAllTransactionsByCatID);
+
+     // calculate debit, credit, balance of an account by accountID
+     app.get('/users/accounts/statistic/:id', controllers.transactions.getStatisticByAccountId);
 
     // create new user
     app.post('/users/new', controllers.users.create);

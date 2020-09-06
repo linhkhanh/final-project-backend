@@ -302,7 +302,6 @@ async function calculateTransactionsExpense (req, res) {
 async function filterTransactions (req, res) {
     if(req.session.userId) {
         try {
-            console.log('end', req.body);
             const filteredTransactions = await models.transactions.findAll({
                 where: {
                     userId: req.session.userId,
@@ -322,6 +321,57 @@ async function filterTransactions (req, res) {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
     }
 }
+
+async function getStatisticByAccountId (req, res) {
+    if(req.session.userId) {
+        try {
+            const id = getIdParam(req);
+            const totalIncome = await models.sequelize.query(`
+            SELECT SUM(amount) as total_income
+            FROM 
+                transactions a, 
+                categories b,
+                accounts c
+            WHERE b.type = 'income'
+                AND c.id = ${id}
+                AND a."categoryId" = b.id
+                AND a."accountId" = c.id;
+            `, { type: QueryTypes.SELECT });
+
+            const totalExpense = await models.sequelize.query(`
+            SELECT SUM(amount) as total_expense
+            FROM 
+                transactions a, 
+                categories b,
+                accounts c
+            WHERE b.type = 'expense' 
+                AND c.id = ${id}
+                AND a."categoryId" = b.id
+                AND a."accountId" = c.id;
+            `, { type: QueryTypes.SELECT });
+
+            if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+            if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
+
+            const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
+
+            httpResponseFormatter.formatOkResponse(res, {
+                credit: totalExpense[0].total_expense,
+                debit: totalIncome[0].total_income,
+                balance: balance
+            } );
+
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, {
+                message: err.message
+            } );
+        }
+
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -335,5 +385,6 @@ module.exports = {
     eachAccount,
     calculateTransactionsIncome,
     calculateTransactionsExpense,
-    filterTransactions
+    filterTransactions,
+    getStatisticByAccountId 
 };
