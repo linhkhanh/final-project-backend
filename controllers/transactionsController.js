@@ -355,10 +355,17 @@ async function getStatisticByAccountId (req, res) {
 
             const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
 
+            const transactions = await models.transactions.findAll({
+                where: {
+                    accountId: id
+                }
+            });
+
             httpResponseFormatter.formatOkResponse(res, {
                 credit: totalExpense[0].total_expense,
                 debit: totalIncome[0].total_income,
-                balance: balance
+                balance: balance,
+                totalTransactions: transactions.length
             } );
 
         } catch (err) {
