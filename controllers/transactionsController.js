@@ -80,6 +80,25 @@ async function remove(req, res) {
 
 }
 
+async function deleteAllTransactionsByAccId(req, res) {
+    if (req.session.userId) {
+        try {
+            const id = getIdParam(req);
+            await models.transactions.destroy({
+                where: {
+                    accountId: id
+                }
+            });
+            httpResponseFormatter.formatOkResponse(res, { message: 'Delete successfully.' });
+        } catch (err) {
+            httpResponseFormatter.formatOkResponse(res, { message: err.message });
+        }
+    } else {
+        httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
+    }
+
+}
+
 async function getAllTransactionsByCatID(req, res) {
     if (req.session.userId) {
         try {
@@ -91,9 +110,9 @@ async function getAllTransactionsByCatID(req, res) {
                     categoryId: id
                 }
             })
-           
-            transactions.sort((item1, item2) => item2.paidAt - item1.paidAt); 
-            
+
+            transactions.sort((item1, item2) => item2.paidAt - item1.paidAt);
+
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -152,7 +171,7 @@ async function getAllTransactionsByAccountId(req, res) {
 async function calculateBalance(req, res) {
     if (req.session.userId) {
         const id = getIdParam(req);
-        const totalIncome= await models.sequelize.query(`
+        const totalIncome = await models.sequelize.query(`
         SELECT SUM(amount) as total_income
             FROM 
                 transactions a, 
@@ -162,7 +181,7 @@ async function calculateBalance(req, res) {
                 AND a."categoryId" = b.id
         `, { type: QueryTypes.SELECT });
 
-        const totalExpense= await models.sequelize.query(`
+        const totalExpense = await models.sequelize.query(`
         SELECT SUM(amount) as total_expense
         FROM 
             transactions a, 
@@ -172,13 +191,13 @@ async function calculateBalance(req, res) {
             AND a."categoryId" = b.id
         `, { type: QueryTypes.SELECT });
 
-        if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
-        if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
+        if (!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+        if (!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
         const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
 
         httpResponseFormatter.formatOkResponse(res, {
             totalIncome: totalIncome[0].total_income,
-            totalExpense: totalExpense[0].total_expense, 
+            totalExpense: totalExpense[0].total_expense,
             balance: balance
         });
     } else {
@@ -186,8 +205,8 @@ async function calculateBalance(req, res) {
     }
 }
 
-async function eachAccount (req, res) {
-    if(req.session.userId) {
+async function eachAccount(req, res) {
+    if (req.session.userId) {
         const id = getIdParam(req);
         const allAccounts = await models.accounts.findAll({
             where: {
@@ -195,7 +214,7 @@ async function eachAccount (req, res) {
             }
         });
         const accountDetail = [];
-        for(let i = 0; i < allAccounts.length; i++) {
+        for (let i = 0; i < allAccounts.length; i++) {
             const totalIncome = await models.sequelize.query(`
             SELECT SUM(amount) as total_income
             FROM 
@@ -219,8 +238,8 @@ async function eachAccount (req, res) {
                 AND a."categoryId" = b.id
                 AND a."accountId" = c.id;
             `, { type: QueryTypes.SELECT });
-            if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
-            if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
+            if (!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+            if (!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
 
             const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
             accountDetail.push({
@@ -231,16 +250,16 @@ async function eachAccount (req, res) {
         console.log("detail", accountDetail);
 
         httpResponseFormatter.formatOkResponse(res, accountDetail);
-       
+
     } else {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
     }
 }
 
-async function calculateTransactionsIncome (req, res) {
-    if(req.session.userId) {
+async function calculateTransactionsIncome(req, res) {
+    if (req.session.userId) {
         const id = getIdParam(req);
-       
+
         try {
             const transactionsIncome = await models.sequelize.query(`
             select sum(amount) as transactions_income, DATE("paidAt") 
@@ -254,11 +273,11 @@ async function calculateTransactionsIncome (req, res) {
             `, { type: QueryTypes.SELECT });
 
             const data = {};
-            for(let i = 0; i < transactionsIncome.length; i++) {
-                data[transactionsIncome[i].date] = (+transactionsIncome[i].transactions_income/100).toFixed(2);
+            for (let i = 0; i < transactionsIncome.length; i++) {
+                data[transactionsIncome[i].date] = (+transactionsIncome[i].transactions_income / 100).toFixed(2);
             }
 
-            httpResponseFormatter.formatOkResponse(res, data );
+            httpResponseFormatter.formatOkResponse(res, data);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, { message: err.message });
         }
@@ -268,10 +287,10 @@ async function calculateTransactionsIncome (req, res) {
     }
 }
 
-async function calculateTransactionsExpense (req, res) {
-    if(req.session.userId) {
+async function calculateTransactionsExpense(req, res) {
+    if (req.session.userId) {
         const id = getIdParam(req);
-       
+
         try {
             const transactionsExpense = await models.sequelize.query(`
             select sum(amount) as transactions_expense, DATE("paidAt") 
@@ -285,11 +304,11 @@ async function calculateTransactionsExpense (req, res) {
             `, { type: QueryTypes.SELECT });
 
             const data = {};
-            for(let i = 0; i < transactionsExpense.length; i++) {
-                data[transactionsExpense[i].date] = (+transactionsExpense[i].transactions_expense/100).toFixed(2);
+            for (let i = 0; i < transactionsExpense.length; i++) {
+                data[transactionsExpense[i].date] = (+transactionsExpense[i].transactions_expense / 100).toFixed(2);
             }
 
-            httpResponseFormatter.formatOkResponse(res, data );
+            httpResponseFormatter.formatOkResponse(res, data);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, { message: err.message });
         }
@@ -299,8 +318,8 @@ async function calculateTransactionsExpense (req, res) {
     }
 }
 
-async function filterTransactions (req, res) {
-    if(req.session.userId) {
+async function filterTransactions(req, res) {
+    if (req.session.userId) {
         try {
             const filteredTransactions = await models.transactions.findAll({
                 where: {
@@ -311,19 +330,19 @@ async function filterTransactions (req, res) {
                     }
                 }
             })
-            httpResponseFormatter.formatOkResponse(res, filteredTransactions );
+            httpResponseFormatter.formatOkResponse(res, filteredTransactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
                 message: err.message
-            } );
+            });
         }
     } {
         httpResponseFormatter.formatOkResponse(res, { message: 'You need to log in.' });
     }
 }
 
-async function getStatisticByAccountId (req, res) {
-    if(req.session.userId) {
+async function getStatisticByAccountId(req, res) {
+    if (req.session.userId) {
         try {
             const id = getIdParam(req);
             const totalIncome = await models.sequelize.query(`
@@ -350,8 +369,8 @@ async function getStatisticByAccountId (req, res) {
                 AND a."accountId" = c.id;
             `, { type: QueryTypes.SELECT });
 
-            if(!totalIncome[0].total_income) totalIncome[0].total_income = 0;
-            if(!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
+            if (!totalIncome[0].total_income) totalIncome[0].total_income = 0;
+            if (!totalExpense[0].total_expense) totalExpense[0].total_expense = 0;
 
             const balance = totalIncome[0].total_income - totalExpense[0].total_expense;
 
@@ -366,12 +385,12 @@ async function getStatisticByAccountId (req, res) {
                 debit: totalIncome[0].total_income,
                 balance: balance,
                 totalTransactions: transactions.length
-            } );
+            });
 
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
                 message: err.message
-            } );
+            });
         }
 
     } else {
@@ -393,5 +412,6 @@ module.exports = {
     calculateTransactionsIncome,
     calculateTransactionsExpense,
     filterTransactions,
-    getStatisticByAccountId 
+    getStatisticByAccountId,
+    deleteAllTransactionsByAccId
 };

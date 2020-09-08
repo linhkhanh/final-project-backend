@@ -62,7 +62,6 @@ module.exports = app => {
     // calculate balance of each account
     app.get('/users/:id/accounts/statistic/each', controllers.transactions.eachAccount);
 
-
     // calculate transactions type income 
     app.get('/users/:id/transactions/income', controllers.transactions.calculateTransactionsIncome);
 
@@ -120,6 +119,9 @@ module.exports = app => {
     // edit transaction 
     app.put('/transactions/:id', controllers.transactions.update);
 
+     //delete all transactions by account ID
+    app.delete('/transactions/all/:id', controllers.transactions.deleteAllTransactionsByAccId);
+    
     // delete account by id
     app.delete('/accounts/:id', controllers.accounts.remove);
 
@@ -128,4 +130,6 @@ module.exports = app => {
 
     // delete category by id 
     app.delete('/categories/:id', controllers.categories.remove);
+
+   
 };
