@@ -133,7 +133,7 @@ async function getAllTransactionsByUserId(req, res) {
                     userId: id
                 }
             });
-            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
+            transactions.sort((item1, item2) => item2.paidAt - item1.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {
@@ -156,7 +156,7 @@ async function getAllTransactionsByAccountId(req, res) {
                     accountId: id
                 }
             });
-            transactions.sort((item1, item2) => item1.paidAt - item2.paidAt)
+            transactions.sort((item1, item2) => item2.paidAt - item1.paidAt)
             httpResponseFormatter.formatOkResponse(res, transactions);
         } catch (err) {
             httpResponseFormatter.formatOkResponse(res, {

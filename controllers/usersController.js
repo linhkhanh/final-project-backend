@@ -116,7 +116,7 @@ async function importStatement(req, res, next) {
 			const revivedClassifier = bayes.fromJson(stateJson.data);
 
 			fs.createReadStream(req.file.path)
-				.pipe(csv(['date', 'description', 'amount', 'empty', 'account']))
+				.pipe(csv(['date', 'description', 'amount']))
 				.on('data', (data) => results.push(data))
 				.on('end', async () => {
 					// console.log(results);
@@ -133,6 +133,7 @@ async function importStatement(req, res, next) {
 							userId: req.session.userId
 						})
 					}
+					console.log(editedResult);
 					// add to transactions table	
 					await models.transactions.bulkCreate(editedResult);
 				});
@@ -165,7 +166,7 @@ async function importTrainingData(req, res, next) {
 			const revivedClassifier = bayes.fromJson(stateJson.data);
 
 			fs.createReadStream(req.file.path)
-				.pipe(csv(['date', 'description', 'amount', 'empty', 'account', 'category']))
+				.pipe(csv(['description', 'category']))
 				.on('data', (data) => results.push(data))
 				.on('end', async () => {
 					// console.log(results);
@@ -180,7 +181,7 @@ async function importTrainingData(req, res, next) {
 		} else {
 
 			fs.createReadStream(req.file.path)
-				.pipe(csv(['date', 'description', 'amount', 'empty', 'account', 'category']))
+				.pipe(csv(['description', 'category']))
 				.on('data', (data) => results.push(data))
 				.on('end', async () => {
 					// console.log(results);
