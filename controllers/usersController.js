@@ -123,7 +123,7 @@ async function importStatement(req, res, next) {
 					for (let i = 0; i < results.length; i++) {
 						const categoryName = await revivedClassifier.categorize(results[i].description);
 						let categoryId = await findCategoryId(allCategories, categoryName);
-						if (!categoryId) results[i].amount < 0 ? categoryId = categoriesExpense[10] : categoryId = categoriesIncome[3];
+						if (!categoryId) results[i].amount < 0 ? categoryId = categoriesExpense[12] : categoryId = categoriesIncome[5];
 						editedResult.push({
 							amount: (Math.abs(results[i].amount) * 100).toFixed(0),
 							description: results[i].description,
