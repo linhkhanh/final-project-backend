@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   next();
+// });
 
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
