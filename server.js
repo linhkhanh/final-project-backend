@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -13,10 +14,6 @@ const session = require('express-session');
 const cors = require('cors');
 const db = require('./models');
 const PORT = process.env.PORT || 4000;
-
-require('dotenv').config({
-  path: './config/config.env',
-});
 
 /// Connect to database by using sequelize
 async function assertDatabaseConnectionOk() {
